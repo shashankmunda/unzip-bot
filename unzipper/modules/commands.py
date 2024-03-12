@@ -636,61 +636,38 @@ async def add_vip(_, message: Message):
         return
     message = message.reply_to_message
     messagearray = message.text.splitlines()
-    if len(messagearray) != 13:
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
-    if not messagearray[0].isdigit():
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
+    dateregex = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z"    
+    validate_input = [
+        messagearray[0].isdigit(),
+        re.match(dateregex, messagearray[1]),
+        re.match(dateregex, messagearray[2]),
+        messagearray[3] in ["paypal", "telegram", "sponsor", "bmac"],
+        messagearray[4] in ["monthly", "yearly"],
+        messagearray[5] in ["True", "False"],
+        messagearray[6] in ["True", "False"],
+        re.match(dateregex, messagearray[7]),
+        messagearray[8].isdigit(),
+        messagearray[9] in ["True", "False"],
+        messagearray[10] in ["True", "False"],
+        re.match(r"[a-zA-Z0-9]{1,34}", messagearray[11]),
+        messagearray[12] in ["True", "False"]
+    ]
+    for check in validate_input: 
+        if check == False:
+            await message.reply(Messages.VIP_REQUIRED_MESSAGE)
+            return
     user_id = int(messagearray[0])
-    dateregex = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z"
-    if not re.match(dateregex, messagearray[1]):
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
     subscription = messagearray[1]
-    if not re.match(dateregex, messagearray[2]):
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
     ends = messagearray[2]
-    if messagearray[3] not in ["paypal", "telegram", "sponsor", "bmac"]:
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
     used = messagearray[3]
-    if messagearray[4] not in ["monthly", "yearly"]:
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
     billed = messagearray[4]
-    if messagearray[5] not in ["True", "False"]:
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
     early = messagearray[5] == "True"
-    if messagearray[6] not in ["True", "False"]:
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
     donator = messagearray[6] == "True"
-    if not re.match(dateregex, messagearray[7]):
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
     started = messagearray[7]
-    if not messagearray[8].isdigit():
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
     successful = int(messagearray[8])
-    if messagearray[9] not in ["True", "False"]:
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
     gap = messagearray[9] == "True"
-    if messagearray[10] not in ["True", "False"]:
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
     gifted = messagearray[10] == "True"
-    if not re.match(r"[a-zA-Z0-9]{1,34}", messagearray[11]):
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
     referral = messagearray[11]
-    if messagearray[12] not in ["True", "False"]:
-        await message.reply(Messages.VIP_REQUIRED_MESSAGE)
-        return
     lifetime = messagearray[12] == "True"
     await add_vip_user(
         user_id,
