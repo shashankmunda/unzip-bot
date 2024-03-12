@@ -13,65 +13,58 @@ import mutagen.id3 as id3
 
 from unzipper.modules.ext_script.ext_helper import run_cmds_on_cr, __run_cmds_unzipper
 
-def mapToMp3(file_path):
-    return MP3(file_path, ID3=EasyID3)
-
-def mapToMp4(file_path):
-    return MP4(file_path)
-
-def mapToFlac(file_path):
-    return FLAC(file_path)
-
-def mapToAiff(file_path):
-    return AIFF(file_path)
-
-def mapToOggVorbis(file_path):
-    return OggVorbis(file_path)
-
-def mapToOggOpus(file_path):
-    return OggOpus(file_path)
-
-def mapToWav(file_path):
-    return WAVE(file_path)
-
-def mapToAsf(file_path):
-    return ASF(file_path)
-
-def mapToAac(file_path):
-    return AAC(file_path)
 
 async def get_audio_metadata(file_path):
     file_ext = file_path.split(".")[-1].lower()
     audio_meta = {"performer": None, "title": None, "duration": None}
-    audio_extensions = ["mp3","m4a","alac","flac","aif","aiff","ogg","opus","wav","wma","aac"]
-    map_extension_to_container = {
-        "mp3": mapToMp3,
-        "m4a": mapToMp4,
-        "alac": mapToMp4,
-        "aif": mapToAiff,
-        "aiff": mapToAiff,
-        "ogg": mapToOggVorbis,
-        "opus": mapToOggOpus,
-        "wav": mapToWav,
-        "wma": mapToAsf,
-        "aac": mapToAac
-    }
 
     try:
-        if file_ext in audio_extensions:
-            audio = map_extension_to_container[audio_extensions[file_ext]]
+        if file_ext in ["mp3"]:
+            audio = MP3(file_path, ID3=EasyID3)
+        elif file_ext in ["m4a", "alac"]:
+            audio = MP4(file_path)
+        elif file_ext in ["flac"]:
+            audio = FLAC(file_path)
+        elif file_ext in ["aif", "aiff"]:
+            audio = AIFF(file_path)
+        elif file_ext in ["ogg"]:
+            audio = OggVorbis(file_path)
+        elif file_ext in ["opus"]:
+            audio = OggOpus(file_path)
+        elif file_ext in ["wav"]:
+            audio = WAVE(file_path)
+        elif file_ext in ["wma"]:
+            audio = ASF(file_path)
+        elif file_ext in ["aac"]:
+            audio = AAC(file_path)
         else:
             return audio_meta
 
         audio_meta["duration"] = int(audio.info.length)
 
-        if file_ext in ["mp3","flac","aif","aiff","ogg","opus"]:
+        if file_ext == "mp3":
             audio_meta["performer"] = audio.get("artist", [None])[0]
             audio_meta["title"] = audio.get("title", [None])[0]
 
         elif file_ext in ["m4a", "alac"]:
             audio_meta["performer"] = audio.tags.get("\xa9ART", [None])[0]
             audio_meta["title"] = audio.tags.get("\xa9nam", [None])[0]
+
+        elif file_ext == "flac":
+            audio_meta["performer"] = audio.get("artist", [None])[0]
+            audio_meta["title"] = audio.get("title", [None])[0]
+
+        elif file_ext in ["aif", "aiff"]:
+            audio_meta["performer"] = audio.get("artist", [None])[0]
+            audio_meta["title"] = audio.get("title", [None])[0]
+
+        elif file_ext == "ogg":
+            audio_meta["performer"] = audio.get("artist", [None])[0]
+            audio_meta["title"] = audio.get("title", [None])[0]
+
+        elif file_ext == "opus":
+            audio_meta["performer"] = audio.get("artist", [None])[0]
+            audio_meta["title"] = audio.get("title", [None])[0]
 
         elif file_ext == "wav":
             # WAV doesn't have a standard tagging system, handling might vary
