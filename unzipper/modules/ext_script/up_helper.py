@@ -66,42 +66,27 @@ async def send_file(unzip_bot, c_id, doc_f, query, full_path, log_msg, split):
         )
         if ul_mode == "media" and fext in extentions_list["audio"]:
             metadata = await get_audio_metadata(doc_f)
-            if thumbornot:
-                thumb_image = Config.THUMB_LOCATION + "/" + str(c_id) + ".jpg"
-                await unzip_bot.send_audio(
-                    chat_id=c_id,
-                    audio=doc_f,
-                    caption=Messages.EXT_CAPTION.format(fname),
-                    duration=metadata["duration"],
-                    performer=metadata["performer"],
-                    title=metadata["title"],
-                    thumb=thumb_image,
-                    disable_notification=True,
-                    progress=progress_for_pyrogram,
-                    progress_args=(
-                        Messages.TRY_UP.format(fname),
-                        upmsg,
-                        time(),
-                        unzip_bot,
-                    ),
-                )
-            else:
-                await unzip_bot.send_audio(
-                    chat_id=c_id,
-                    audio=doc_f,
-                    caption=Messages.EXT_CAPTION.format(fname),
-                    duration=metadata["duration"],
-                    performer=metadata["performer"],
-                    title=metadata["title"],
-                    disable_notification=True,
-                    progress=progress_for_pyrogram,
-                    progress_args=(
-                        Messages.TRY_UP.format(fname),
-                        upmsg,
-                        time(),
-                        unzip_bot,
-                    ),
-                )
+            fun_kwargs={}
+            if(thumbornot):
+                thumb_image = Config.THUMB_LOCATION + "/" + str(c_id) +".jpg"
+                fun_kwargs['thumb']=thumb_image
+            await unzip_bot.send_audio(
+                chat_id=c_id,
+                audio=doc_f,
+                caption=Messages.EXT_CAPTION.format(fname),
+                duration=metadata["duration"],
+                performer=metadata["performer"],
+                title=metadata["title"],
+                **fun_kwargs,
+                disable_notification=True,
+                progress=progress_for_pyrogram,
+                progress_args=(
+                    Messages.TRY_UP.format(fname),
+                    upmsg,
+                    time(),
+                    unzip_bot,
+                ),
+            )
         elif ul_mode == "media" and fext in extentions_list["photo"]:
             # impossible to use a thumb here :(
             try:
@@ -119,70 +104,44 @@ async def send_file(unzip_bot, c_id, doc_f, query, full_path, log_msg, split):
                     ),
                 )
             except PhotoExtInvalid:
+                fun_kwargs={}
                 if thumbornot:
                     thumb_image = Config.THUMB_LOCATION + "/" + str(c_id) + ".jpg"
-                    await unzip_bot.send_document(
-                        chat_id=c_id,
-                        document=doc_f,
-                        thumb=thumb_image,
-                        caption=Messages.EXT_CAPTION.format(fname),
-                        force_document=True,
-                        disable_notification=True,
-                        progress=progress_for_pyrogram,
-                        progress_args=(
-                            Messages.TRY_UP.format(fname),
-                            upmsg,
-                            time(),
-                            unzip_bot,
-                        ),
-                    )
-                else:
-                    await unzip_bot.send_document(
-                        chat_id=c_id,
-                        document=doc_f,
-                        caption=Messages.EXT_CAPTION.format(fname),
-                        force_document=True,
-                        disable_notification=True,
-                        progress=progress_for_pyrogram,
-                        progress_args=(
-                            Messages.TRY_UP.format(fname),
-                            upmsg,
-                            time(),
-                            unzip_bot,
-                        ),
-                    )
+                    fun_kwargs['thumb']=thumb_image
+                await unzip_bot.send_document(
+                    chat_id=c_id,
+                    document=doc_f,
+                    **fun_kwargs,
+                    caption=Messages.EXT_CAPTION.format(fname),
+                    force_document=True,
+                    disable_notification=True,
+                    progress=progress_for_pyrogram,
+                    progress_args=(
+                        Messages.TRY_UP.format(fname),
+                        upmsg,
+                        time(),
+                        unzip_bot,
+                    ),
+                )
             except PhotoSaveFileInvalid:
+                fun_kwargs={}
                 if thumbornot:
                     thumb_image = Config.THUMB_LOCATION + "/" + str(c_id) + ".jpg"
-                    await unzip_bot.send_document(
-                        chat_id=c_id,
-                        document=doc_f,
-                        thumb=thumb_image,
-                        caption=Messages.EXT_CAPTION.format(fname),
-                        force_document=True,
-                        disable_notification=True,
-                        progress=progress_for_pyrogram,
-                        progress_args=(
-                            Messages.TRY_UP.format(fname),
-                            upmsg,
-                            time(),
-                            unzip_bot,
-                        ),
-                    )
-                else:
-                    await unzip_bot.send_document(
-                        chat_id=c_id,
-                        document=doc_f,
-                        caption=Messages.EXT_CAPTION.format(fname),
-                        force_document=True,
-                        disable_notification=True,
-                        progress=progress_for_pyrogram,
-                        progress_args=(
-                            Messages.TRY_UP.format(fname),
-                            upmsg,
-                            time(),
-                            unzip_bot,
-                        ),
+                    fun_kwargs['thumb']=thumb_image
+                await unzip_bot.send_document(
+                    chat_id=c_id,
+                    document=doc_f,
+                    **fun_kwargs,
+                    caption=Messages.EXT_CAPTION.format(fname),
+                    force_document=True,
+                    disable_notification=True,
+                    progress=progress_for_pyrogram,
+                    progress_args=(
+                        Messages.TRY_UP.format(fname),
+                        upmsg,
+                        time(),
+                        unzip_bot,
+                    ),
                     )
         elif ul_mode == "media" and fext in extentions_list["video"]:
             vid_duration = await run_shell_cmds(
@@ -271,27 +230,14 @@ async def send_file(unzip_bot, c_id, doc_f, query, full_path, log_msg, split):
                             ),
                         )
         else:
+            fun_kwargs={}
             if thumbornot:
                 thumb_image = Config.THUMB_LOCATION + "/" + str(c_id) + ".jpg"
-                await unzip_bot.send_document(
+                fun_kwargs['thumb']=thumb_image
+            await unzip_bot.send_document(
                     chat_id=c_id,
                     document=doc_f,
                     thumb=thumb_image,
-                    caption=Messages.EXT_CAPTION.format(fname),
-                    force_document=True,
-                    disable_notification=True,
-                    progress=progress_for_pyrogram,
-                    progress_args=(
-                        Messages.TRY_UP.format(fname),
-                        upmsg,
-                        time(),
-                        unzip_bot,
-                    ),
-                )
-            else:
-                await unzip_bot.send_document(
-                    chat_id=c_id,
-                    document=doc_f,
                     caption=Messages.EXT_CAPTION.format(fname),
                     force_document=True,
                     disable_notification=True,
