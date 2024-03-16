@@ -45,21 +45,21 @@ async def get_audio_metadata(file_path):
     audio_meta = {"performer": None, "title": None, "duration": None}
     audio_extensions = ["mp3","m4a","alac","flac","aif","aiff","ogg","opus","wav","wma","aac"]
     map_extension_to_container = {
-        "mp3": mapToMp3,
-        "m4a": mapToMp4,
-        "alac": mapToMp4,
-        "aif": mapToAiff,
-        "aiff": mapToAiff,
-        "ogg": mapToOggVorbis,
-        "opus": mapToOggOpus,
-        "wav": mapToWav,
-        "wma": mapToAsf,
-        "aac": mapToAac
+        "mp3": mapToMp3(file_path),
+        "m4a": mapToMp4(file_path),
+        "alac": mapToMp4(file_path),
+        "aif": mapToAiff(file_path),
+        "aiff": mapToAiff(file_path),
+        "ogg": mapToOggVorbis(file_path),
+        "opus": mapToOggOpus(file_path),
+        "wav": mapToWav(file_path),
+        "wma": mapToAsf(file_path),
+        "aac": mapToAac(file_path)
     }
 
     try:
         if file_ext in audio_extensions:
-            audio = map_extension_to_container[audio_extensions[file_ext]]
+            audio = map_extension_to_container[file_ext]
         else:
             return audio_meta
 
